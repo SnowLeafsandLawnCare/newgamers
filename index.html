@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWF File Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #swf-container {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        #upload-btn {
+            margin: 20px;
+        }
+        #swf-player {
+            margin-top: 20px;
+            width: 640px;
+            height: 480px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="swf-container">
+        <h1>Upload Your SWF File</h1>
+        <p>Select an SWF file to play:</p>
+        <input type="file" id="upload-btn" accept=".swf">
+        <div id="swf-player">
+            <!-- Ruffle player will display the SWF here -->
+        </div>
+    </div>
+
+    <!-- Include the Ruffle JS library from a CDN -->
+    <script src="https://unpkg.com/@ruffle-rs/ruffle"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const uploadBtn = document.getElementById("upload-btn");
+            const swfPlayerContainer = document.getElementById("swf-player");
+
+            // Initialize the Ruffle player
+            const ruffle = window.RufflePlayer.newest();
+            let player = ruffle.createPlayer();
+            swfPlayerContainer.appendChild(player);
+
+            // Handle file upload
+            uploadBtn.addEventListener("change", function (event) {
+                const file = event.target.files[0];
+
+                if (file && file.type === "application/x-shockwave-flash") {
+                    const reader = new FileReader();
+
+                    // When file is loaded, pass it to the Ruffle player
+                    reader.onload = function (e) {
+                        const arrayBuffer = e.target.result;
+                        player.load({
+                            data: arrayBuffer,
+                            url: URL.createObjectURL(file)
+                        });
+                    };
+
+                    // Read the SWF file as an array buffer
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    alert("Please upload a valid SWF file.");
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
